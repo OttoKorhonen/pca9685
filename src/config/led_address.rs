@@ -79,3 +79,8 @@ pub const LED_15_ON_H:u8 = 0x43;
 pub const LED_15_OFF_L:u8 = 0x44;
 pub const LED_15_OFF_H:u8 = 0x45;
 
+pub const ALL_LED_ON_L: u8 = 0xFA;
+pub const ALL_LED_ON_H: u8 = 0xFB;
+pub const ALL_LED_OFF_L: u8 = 0xFC;
+pub const ALL_LED_OFF_H: u8 = 0xFD;
+pub const PRE_SCALE: u8 = 0xFE;
