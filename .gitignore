@@ -194,3 +194,5 @@ rp235x_riscv.x
 Embed.toml
 .cargo/
 .idea
+
+examples

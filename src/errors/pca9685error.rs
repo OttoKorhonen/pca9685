@@ -5,6 +5,8 @@ pub enum Pca9685Error<E> {
     DeviceNotFound,
     I2CError(E),
     DelayTimeOutOfScope,
+    PWMDutyCycleOutOfScope,
+    InvalidChannel,
 }
 
 impl<E> fmt::Display for Pca9685Error<E>
@@ -15,7 +17,9 @@ where
         match self {
             Self::I2CError(e) => write!(f,"I2C error {:?}", e),
             Self::DeviceNotFound => write!(f, "Device not found!"),
-            Self::DelayTimeOutOfScope => write!(f, "Delay time is out of scope")
+            Self::DelayTimeOutOfScope => write!(f, "Delay time is out of scope"),
+            Self::PWMDutyCycleOutOfScope => write!(f, "PWM duty cycle out of scope"),
+            Self::InvalidChannel => write!(f, "Invalid channel")
         }
     }
 }
