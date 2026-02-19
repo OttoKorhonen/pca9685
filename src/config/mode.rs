@@ -17,6 +17,8 @@ impl Mode {
     pub const fn new() -> Self {
         Self { bits: 0 }
     }
+
+
     pub const fn get_value(self) -> u8 {
         self.bits
     }
@@ -93,3 +95,9 @@ impl Mode {
         self
     }
 }
+ impl Default for Mode {
+     fn default() -> Self {
+         let default_bits = 0b0001_0001;
+         Self{bits: default_bits}
+     }
+ }

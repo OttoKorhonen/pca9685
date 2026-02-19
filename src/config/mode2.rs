@@ -58,3 +58,10 @@ impl Mode2 {
         self
     }
 }
+
+impl Default for Mode2 {
+    fn default() -> Self {
+        let default_bits = 0b0000_0100;
+        Self {bits: default_bits}
+    }
+}
