@@ -1,5 +1,7 @@
-
-const MASK_MODE_2: u8 = 0b0000_0001;
+const MASK_OUTNE: u8 = 0b0000_0001;
+const MASK_OUTDRV: u8 = 0b0000_0100;
+const MASK_OCH: u8 = 0b0000_1000;
+const MASK_INVRT: u8 = 0b0001_0000;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub struct Mode2 {
@@ -13,34 +15,46 @@ impl Mode2 {
     pub const fn get_value(self) -> u8 {
         self.bits
     }
+    /// 0 = default
+    /// 00 = When OE = 1 (output drivers not enabled), LEDn = 0.
+    /// 01 = When OE = 1 (output drivers not enabled):
+    pub const fn set_outne(mut self, enable: bool) -> Self {
+        match enable {
+            true => self.bits |= MASK_OUTNE,
+            false => self.bits &= !MASK_OUTNE,
+        }
+        self
+    }
+    /// 1 = default
+    /// 1 = The 16 LEDn outputs are configured with a totem pole structure.
+    /// 0 = The 16 LEDn outputs are configured with an open-drain structure.
+    pub const fn set_outdrv(mut self, enable: bool) -> Self {
+        match enable {
+            true => self.bits |= MASK_OUTDRV,
+            false => self.bits &= !MASK_OUTDRV,
+        }
+        self
+    }
+    ///0 = default
+    /// 1 = Outputs change on ACK
+    /// 0 = Outputs change on STOP
+    pub const fn set_och(mut self, enable: bool) -> Self {
+        match enable {
+            true => self.bits |= MASK_OCH,
+            false => self.bits &= !MASK_OCH,
+        }
+        self
+    }
+    ///default = 0
+    /// 1 = Output logic state inverted. Value to use when no external driver used.
+    /// Applicable when OE = 0.
+    ///Output logic state not inverted. Value to use when external driver used.
+    /// Applicable when OE = 0.
+    pub const fn set_invrt(mut self, enable: bool) -> Self {
+        match enable {
+            true => self.bits |= MASK_INVRT,
+            false => self.bits &= !MASK_INVRT,
+        }
+        self
+    }
 }
-
-/// 0 = default
-/// 00 = When OE = 1 (output drivers not enabled), LEDn = 0.
-/// 01 = When OE = 1 (output drivers not enabled):
-// LEDn = 1 when OUTDRV = 1
-// LEDn = high-impedance when OUTDRV = 0 (same as OUTNE[1:0] = 10)
-pub const OUTNE_1: u8 = 0b01;
-pub const OUTNE_0: u8 = 0b00;
-
-/// 1 = default
-/// 1 = The 16 LEDn outputs are configured with a totem pole structure.
-/// 0 = The 16 LEDn outputs are configured with an open-drain structure.
-pub const OUTDRV_1: u8 = 0b1 << 2;
-pub const OUTDRV_0: u8 = 0b0 << 2;
-
-///0 = default
-/// 1 = Outputs change on ACK
-/// 0 = Outputs change on STOP
-pub const OCH_1: u8 = 0b1 << 3;
-pub const OCH_0: u8 = 0b0 << 3;
-
-///default = 0
-/// 1 = Output logic state inverted. Value to use when no external driver used.
-/// Applicable when OE = 0.
-///Output logic state not inverted. Value to use when external driver used.
-/// Applicable when OE = 0.
-pub const INVRT_1: u8 = 0b1 << 4;
-pub const INVRT_0: u8 = 0b0 << 4;
-
-pub const RESERVED: u8 = 0b00 << 5;
