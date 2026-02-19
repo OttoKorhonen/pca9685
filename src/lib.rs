@@ -1,4 +1,4 @@
 #![no_std]
 pub mod config;
-pub mod errors;
+pub(crate) mod errors;
 pub mod pca9685;

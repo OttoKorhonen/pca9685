@@ -26,23 +26,12 @@ where
         self.i2c.write(self.address, &[0x00, mode.get_value()])?;
         Ok(())
     }
-
-    // pub fn configure(&mut self, config: u8) -> Result<(), Pca9685Error<I2c::Error>> {
-    //     // MODE1 register is at 0x00
-    //     self.write_register(0x00, config)?;
-    //     Ok(())
-    // }
-
+    
     pub fn set_mode2(&mut self, mode2: Mode2) -> Result<(), Pca9685Error<I2c::Error>> {
         // MODE1 register is at 0x01
         self.i2c.write(self.address, &[0x01, mode2.get_value()])?;
         Ok(())
     }
-
-    // pub fn write_register(&mut self, register: u8, value: u8) -> Result<(), Pca9685Error<I2c::Error>> {
-    //     self.i2c.write(self.address, &[register, value])?;
-    //     Ok(())
-    // }
 
     pub fn read_register(&mut self, register: u8) -> Result<u8, Pca9685Error<I2c::Error>> {
         let mut buffer = [0];
@@ -57,11 +46,17 @@ where
 
         let old_mode = self.read_register(0x00)?;
         let new_mode = (old_mode & 0x7F) | 0x10; // sleep
-        self.write_register(0x00, new_mode)?;
-        self.write_register(0xFE, prescale)?;
-        self.write_register(0x00, old_mode)?;
+        self.i2c.write(self.address, &[0x00, new_mode]);
+        self.i2c.write(self.address, &[0xFE, prescale]);
+        self.i2c.write(self.address, &[0x00, old_mode]);
         self.delay.delay_us(500);
-        self.write_register(0x00, old_mode | 0x80)?;
+        self.i2c.write(self.address, &[0x00, old_mode | 0x80]);
+        
+        // self.write_register(0x00, new_mode)?;
+        // self.write_register(0xFE, prescale)?;
+        // self.write_register(0x00, old_mode)?;
+        // self.delay.delay_us(500);
+        // self.write_register(0x00, old_mode | 0x80)?;
 
         Ok(())
     }
@@ -80,10 +75,10 @@ where
 
         let base_reg = 0x06 + 4 * channel;
 
-        self.write_register(base_reg, on_l)?;
-        self.write_register(base_reg + 1, on_h)?;
-        self.write_register(base_reg + 2, off_l)?;
-        self.write_register(base_reg + 3, off_h)?;
+        self.i2c.write(self.address, &[base_reg, on_l])?;
+        self.i2c.write(self.address, &[base_reg + 1, on_h])?;
+        self.i2c.write(self.address, &[base_reg + 2, off_l])?;
+        self.i2c.write(self.address, &[base_reg + 3, off_h])?;
 
         Ok(())
     }
