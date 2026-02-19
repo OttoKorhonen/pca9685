@@ -1,10 +1,27 @@
+
+const MASK_MODE_2: u8 = 0b0000_0001;
+
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub struct Mode2 {
+    bits: u8,
+}
+
+impl Mode2 {
+    pub const fn new() -> Self {
+        Self { bits: 0 }
+    }
+    pub const fn get_value(self) -> u8 {
+        self.bits
+    }
+}
+
 /// 0 = default
 /// 00 = When OE = 1 (output drivers not enabled), LEDn = 0.
 /// 01 = When OE = 1 (output drivers not enabled):
 // LEDn = 1 when OUTDRV = 1
 // LEDn = high-impedance when OUTDRV = 0 (same as OUTNE[1:0] = 10)
 pub const OUTNE_1: u8 = 0b01;
-pub const OUTNE_0: u8 = 0b00; 
+pub const OUTNE_0: u8 = 0b00;
 
 /// 1 = default
 /// 1 = The 16 LEDn outputs are configured with a totem pole structure.

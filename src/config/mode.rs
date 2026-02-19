@@ -1,56 +1,95 @@
-///1 = default
-///1 = PCA9685 responds to LED All Call I2C-bus address.
-///0 = PCA9685 does not respond to LED All Call I2C-bus address.
-pub const ALL_CALL_1: u8 = 0b1;
-pub const ALL_CALL_0: u8 = 0b0;
+pub const MASK_MODE1: u8 = 0b0000_0000;
+pub const MASK_ALL_CALL: u8 = 0b0000_0001;
+pub const MASK_SUB3: u8     = 0b0000_0010;
+pub const MASK_SUB2: u8     = 0b0000_0100;
+pub const MASK_SUB1: u8     = 0b0000_1000;
+pub const MASK_SLEEP: u8    = 0b0001_0000;
+pub const MASK_AI: u8       = 0b0010_0000;
+pub const MASK_EXTCLK: u8   = 0b0100_0000;
+pub const MASK_RESTART: u8  = 0b1000_0000;
 
-///0 = default
-///1 = PCA9685 responds to I2C-bus subaddress 3.
-///0 = PCA9685 does not respond to I2C-bus subaddress 3.
-pub const SUB3_1: u8 = 0b1 << 1;
-pub const SUB3_0: u8 = 0b0 << 1;
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct Mode {
+    bits: u8,
+}
 
-///0 = default
-///1 = PCA9685 responds to I2C-bus subaddress 2.
-///0 PCA9685 does not respond to I2C-bus subaddress 2.
-pub const SUB2_1: u8 = 0b1 << 2;
-pub const SUB2_0: u8 = 0b0 << 2;
-
-///0 = default
-///1 = PCA9685 responds to I2C-bus subaddress 1.
-///0 = PCA9685 does not respond to I2C-bus subaddress 1.
-pub const SUB1_1: u8 = 0b1 << 3;
-pub const SUB1_0: u8 = 0b0 << 3;
-
-///1 = default
-///1 = Low power mode. Oscillator off.
-///0 = Normal mode[
-pub const SLEEP_1: u8 = 0b1 << 4;
-pub const SLEEP_0: u8 = 0b0 << 4;
-
-///0 = default
-///1 = Register Auto-Increment enabled.
-///0 = Register Auto-Increment disabled
-pub const AI_1: u8 = 0b1 << 5;
-pub const AI_0: u8 = 0b0 << 5;
-
-///To use the EXTCLK pin, this bit must be set by the following sequence:
-/// 1. Set the SLEEP bit in MODE1. This turns off the internal oscillator.
-/// 2. Write logic 1s to both the SLEEP and EXTCLK bits in MODE1. The switch is
-/// now made. The external clock can be active during the switch because the
-/// SLEEP bit is set.
-/// This bit is a ‘sticky bit’, that is, it cannot be cleared by writing a logic 0 to it. The
-/// EXTCLK bit can only be cleared by a power cycle or software reset.
-/// EXTCLK range is DC to 50 MHz.
-///                                      EXTCLK
-/// refresh_rate = -------------------------------------------------------
-///                              4096 × ( prescale + 1 )
-/// 0 = default
-pub const EXTCLK_1: u8 = 0b1 << 6;
-pub const EXTCLK_0: u8 = 0b0 << 6; //default
-
-///0 = default
-///1 = Restart enabled.
-/// 0 = Restart disabled
-pub const RESTART_1: u8 = 0b1 << 7;
-pub const RESTART_0: u8 = 0b0 << 7;
+impl Mode {
+    pub const fn new() -> Self {
+        Self { bits: 0 }
+    }
+    pub const fn get_value(self) -> u8 {
+        self.bits
+    }
+    ///PCA9685 responds to LED All Call I2C-bus address.
+    pub const fn set_all_call(mut self, enable: bool) -> Self {
+        if enable {
+            self.bits |= MASK_ALL_CALL;
+        } else {
+            self.bits &= !MASK_ALL_CALL;
+        }
+        self
+    }
+    ///PCA9685 responds to I2C-bus subaddress 3
+    pub const fn set_sub3(mut self, enable: bool) -> Self {
+        if enable {
+            self.bits |= MASK_SUB3;
+        } else {
+            self.bits &= !MASK_SUB3;
+        }
+        self
+    }
+    ///PCA9685 responds to I2C-bus subaddress 2.
+    pub const fn set_sub2(mut self, enable: bool) -> Self {
+        if enable {
+            self.bits |= MASK_SUB2;
+        } else {
+            self.bits &= !MASK_SUB2;
+        }
+        self
+    }
+    ///PCA9685 responds to I2C-bus subaddress 1.
+    pub const fn set_sub1(mut self, enable: bool) -> Self {
+        if enable {
+            self.bits |= MASK_SUB1;
+        } else {
+            self.bits &= !MASK_SUB1;
+        }
+        self
+    }
+    ///set sleep mode
+    pub const fn set_sleep(mut self, enable: bool) -> Self {
+        if enable {
+            self.bits |= MASK_SLEEP;
+        } else {
+            self.bits &= !MASK_SLEEP;
+        }
+        self
+    }
+    ///Register Auto-Increment enabled
+    pub const fn set_auto_increment(mut self, enable: bool) -> Self {
+        if enable {
+            self.bits |= MASK_AI;
+        } else {
+            self.bits &= !MASK_AI;
+        }
+        self
+    }
+    ///enable EXTCLK pin clock.
+    pub const fn set_external_clock(mut self, enable: bool) -> Self {
+        if enable {
+            self.bits |= MASK_EXTCLK;
+        } else {
+            self.bits &= !MASK_EXTCLK;
+        }
+        self
+    }
+    ///Restart enabled.
+    pub const fn set_restart(mut self, enable: bool) -> Self {
+        if enable {
+            self.bits |= MASK_RESTART;
+        } else {
+            self.bits &= !MASK_RESTART;
+        }
+        self
+    }
+}

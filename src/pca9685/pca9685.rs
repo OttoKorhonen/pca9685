@@ -1,5 +1,6 @@
 use crate::errors::pca9685error::Pca9685Error;
 use embedded_hal::{delay::DelayNs, i2c::SevenBitAddress};
+use crate::config::{mode::Mode, mode2::Mode2};
 
 pub struct Pca9685<I2C, D> {
     i2c: I2C,
@@ -20,16 +21,28 @@ where
         }
     }
 
-    pub fn configure(&mut self, config: u8) -> Result<(), Pca9685Error<I2c::Error>> {
+    pub fn set_mode1(&mut self, mode: Mode) -> Result<(), Pca9685Error<I2c::Error>> {
         // MODE1 register is at 0x00
-        self.write_register(0x00, config)?;
+        self.i2c.write(self.address, &[0x00, mode.get_value()])?;
         Ok(())
     }
 
-    pub fn write_register(&mut self, register: u8, value: u8) -> Result<(), Pca9685Error<I2c::Error>> {
-        self.i2c.write(self.address, &[register, value])?;
+    // pub fn configure(&mut self, config: u8) -> Result<(), Pca9685Error<I2c::Error>> {
+    //     // MODE1 register is at 0x00
+    //     self.write_register(0x00, config)?;
+    //     Ok(())
+    // }
+
+    pub fn set_mode2(&mut self, mode2: Mode2) -> Result<(), Pca9685Error<I2c::Error>> {
+        // MODE1 register is at 0x01
+        self.i2c.write(self.address, &[0x01, mode2.get_value()])?;
         Ok(())
     }
+
+    // pub fn write_register(&mut self, register: u8, value: u8) -> Result<(), Pca9685Error<I2c::Error>> {
+    //     self.i2c.write(self.address, &[register, value])?;
+    //     Ok(())
+    // }
 
     pub fn read_register(&mut self, register: u8) -> Result<u8, Pca9685Error<I2c::Error>> {
         let mut buffer = [0];
