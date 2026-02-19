@@ -26,7 +26,7 @@ where
         self.i2c.write(self.address, &[0x00, mode.get_value()])?;
         Ok(())
     }
-    
+
     pub fn set_mode2(&mut self, mode2: Mode2) -> Result<(), Pca9685Error<I2c::Error>> {
         // MODE1 register is at 0x01
         self.i2c.write(self.address, &[0x01, mode2.get_value()])?;
@@ -46,17 +46,11 @@ where
 
         let old_mode = self.read_register(0x00)?;
         let new_mode = (old_mode & 0x7F) | 0x10; // sleep
-        self.i2c.write(self.address, &[0x00, new_mode]);
-        self.i2c.write(self.address, &[0xFE, prescale]);
-        self.i2c.write(self.address, &[0x00, old_mode]);
+        self.i2c.write(self.address, &[0x00, new_mode])?;
+        self.i2c.write(self.address, &[0xFE, prescale])?;
+        self.i2c.write(self.address, &[0x00, old_mode])?;
         self.delay.delay_us(500);
-        self.i2c.write(self.address, &[0x00, old_mode | 0x80]);
-        
-        // self.write_register(0x00, new_mode)?;
-        // self.write_register(0xFE, prescale)?;
-        // self.write_register(0x00, old_mode)?;
-        // self.delay.delay_us(500);
-        // self.write_register(0x00, old_mode | 0x80)?;
+        self.i2c.write(self.address, &[0x00, old_mode | 0x80])?;
 
         Ok(())
     }
