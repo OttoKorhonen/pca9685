@@ -77,7 +77,7 @@ where
         Ok(())
     }
 
-    pub fn set_pulse_us(&mut self, channel: u8, pulse_us: u16) -> Result<(), Pca9685Error<I2c::Error>> {
+    fn set_pulse_us(&mut self, channel: u8, pulse_us: u16) -> Result<(), Pca9685Error<I2c::Error>> {
         let counts = (pulse_us as f32 * 4096.0 / 20000.0) as u16;
 
         self.set_pwm(channel, 0, counts)
@@ -91,9 +91,19 @@ where
     
     pub fn set_throttle(&mut self, channel: u8, throttle: f32) -> Result<(), Pca9685Error<I2c::Error>> {
         let clamped = throttle.clamp(0.0, 1.0);
+        // ESC range: 1000μs = min, 2000μs = max
+        // Mutta monet ESC:t tarvitsevat ~1100μs että moottori alkaa pyöriä
         let pulse_us = 1000.0 + (clamped * 1000.0);
 
         self.set_pulse_us(channel, pulse_us as u16)
+    }
+    pub fn set_led_brightness(&mut self, channel: u8, brightness: f32) -> Result<(), Pca9685Error<I2c::Error>> {
+        let clamped = brightness.clamp(0.0, 1.0);
+        let pulse_us = 1000.0 + (clamped * 1000.0);
+        self.set_pulse_us(channel, pulse_us as u16)
+    }
+    pub fn set_throttle_raw(&mut self, channel: u8, pulse_us: u16) -> Result<(), Pca9685Error<I2c::Error>> {
+        self.set_pulse_us(channel, pulse_us)
     }
 
     fn count_duty_cycle(
