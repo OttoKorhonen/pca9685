@@ -126,7 +126,31 @@ where
             _ => Err(Pca9685Error::DelayTimeOutOfScope),
         }
     }
-    pub fn set_off_led(&mut self, _led: Led) -> Result<(), Pca9685Error<I2c::Error>> {
-        todo!()
+    pub fn set_led_brightness_typed(&mut self, led: Led, brightness: f32) -> Result<(), Pca9685Error<I2c::Error>> {
+        let clamped = brightness.clamp(0.0, 1.0);
+        let pwm_count = (clamped * 4095.0) as u16;
+        self.set_pwm_typed(led, 0, pwm_count)
+    }
+
+    pub fn set_pwm_typed(&mut self, led: Led, on_time: u16, off_time: u16) -> Result<(), Pca9685Error<I2c::Error>> {
+        let on_l = (on_time & 0xFF) as u8;
+        let on_h = (on_time >> 8) as u8;
+        let off_l = (off_time & 0xFF) as u8;
+        let off_h = (off_time >> 8) as u8;
+
+        self.i2c.write(self.address, &[led.on_l(), on_l])?;
+        self.i2c.write(self.address, &[led.on_h(), on_h])?;
+        self.i2c.write(self.address, &[led.off_l(), off_l])?;
+        self.i2c.write(self.address, &[led.off_h(), off_h])?;
+
+        Ok(())
+    }
+
+    pub fn set_led_off(&mut self, led: Led) -> Result<(), Pca9685Error<I2c::Error>> {
+        self.set_pwm_typed(led, 0, 4096)
+    }
+
+    pub fn set_led_on(&mut self, led: Led) -> Result<(), Pca9685Error<I2c::Error>> {
+        self.set_pwm_typed(led, 0, 0)
     }
 }
