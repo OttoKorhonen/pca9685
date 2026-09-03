@@ -1,6 +1,7 @@
 use crate::errors::pca9685error::Pca9685Error;
 use embedded_hal::{delay::DelayNs, i2c::SevenBitAddress};
 use crate::config::{mode::Mode, mode2::Mode2};
+use crate::pca9685::Led;
 
 pub struct Pca9685<I2C, D> {
     i2c: I2C,
@@ -124,5 +125,8 @@ where
             },
             _ => Err(Pca9685Error::DelayTimeOutOfScope),
         }
+    }
+    pub fn set_off_led(&mut self, _led: Led) -> Result<(), Pca9685Error<I2c::Error>> {
+        todo!()
     }
 }
